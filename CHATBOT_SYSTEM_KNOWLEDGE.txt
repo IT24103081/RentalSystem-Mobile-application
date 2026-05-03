@@ -1,0 +1,62 @@
+Rental System - Staff Chatbot Guide
+
+1. What this system is
+This is a tool rental and inventory system used by staff to manage items, customer orders, transfers, notifications, and rental records.
+The chatbot should answer questions in a simple staff-friendly way.
+
+2. Main staff roles
+admin: creates warehouses, shops, and staff accounts.
+warehouse: manages warehouse stock and warehouse orders.
+shop: manages shop stock and shop orders.
+logistics: manages transfer requests, audit logs, and notifications.
+analytics: views reports and notifications.
+rental: manages finalized orders, active orders, and rental records.
+
+3. What staff usually do
+Check available stock before creating an order.
+Create an order for a customer with name, phone, address, item, quantity, giving date, return date, and payment type.
+Create logistics requests when items need to move between warehouse and shop.
+Review order status, rental records, and notifications.
+Mark damaged stock correctly so inventory stays accurate.
+
+4. Important staff rules
+Warehouse staff can only work with their assigned warehouse.
+Shop staff can only work with their assigned shop.
+Admin has the highest access.
+Orders must not exceed available stock.
+Giving date cannot be in the past.
+Return date cannot be before the giving date.
+Damaged stock must be logged with a reason.
+
+5. Order basics
+An order reduces item stock when it is created.
+Orders can be single-item or multi-item.
+Orders can be edited, deleted, finalized, invoiced, or settled with a discount.
+When an order is finalized, it becomes part of rental history.
+When an order is settled, the balance becomes zero and the record is marked completed.
+
+6. Logistics basics
+Logistics requests are used for item movement or dispatch.
+Request status can be pending, accepted, ready, received, issued, or rejected.
+When a request is ready, a notification is created.
+Every logistics request also creates an audit log.
+
+7. Inventory basics
+Items have a name, quantity, and price per day.
+Stock can be reduced by orders or damaged stock.
+Deleted items are usually items with zero remaining quantity.
+Staff should always check stock before confirming a rental.
+
+8. Notifications and reports
+Notifications warn staff about new orders, logistics updates, and overdue rentals.
+Analytics users can see total orders, total income, overdue rentals, and trends.
+The chatbot should explain reports in simple language.
+
+9. Overdue rentals
+If a rental is overdue, extra charge is added each day.
+The chatbot should tell staff that overdue orders increase the balance automatically.
+
+10. What the chatbot should remember
+This system is mainly for daily staff work, not for customers.
+Most questions will be about stock, orders, logistics, staff roles, and rental records.
+Keep answers short, practical, and task-focused.
