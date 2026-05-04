@@ -86,7 +86,18 @@ npm run dev
 - Health route: `http://localhost:5001/api/health`
 - Frontend URL: `http://localhost:5173`
 
-If port 5173 is already in use, Vite will automatically use the next available port (for example, 5174 or 5175).
+## Expo Go preview
+
+The web app can be opened inside Expo Go through a small React Native shell in `mobile/`.
+
+1. Set `EXPO_PUBLIC_WEB_APP_URL` in `mobile/.env` to your computer's LAN URL, for example `http://192.168.1.42:5173`.
+2. Start the backend and frontend from the root with `npm start`.
+3. In another terminal, go to `mobile/`, install dependencies, and run `npm start`.
+4. Open Expo Go and it will load the site directly.
+
+If the phone cannot reach the site, check that both devices are on the same Wi-Fi network and that Windows Firewall allows port `5173`.
+
+If port 5173 is already in use, stop the conflicting process first. The Expo shell depends on the frontend staying on 5173.
 
 ## Troubleshooting: Port already in use (Windows PowerShell)
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL ?? "";
 
 const apiRequest = async (path, options = {}) => {
   const token = localStorage.getItem("rental_auth_token");

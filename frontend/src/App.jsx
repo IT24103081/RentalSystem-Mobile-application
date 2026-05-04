@@ -18,7 +18,7 @@ import AdminDashboard from "./dashboards/AdminDashboard";
 import AnalyticsNotificationDashboard from "./dashboards/AnalyticsNotificationDashboard";
 import RentalProcessingDashboard from "./dashboards/RentalProcessingDashboard";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL ?? "";
 
 const INVENTORY_IMAGE_MAP = {
   'Angle Grinder 4"': "images/tools images/Angle Grinder 4.jpg",
