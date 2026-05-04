@@ -728,49 +728,75 @@ function RentalProcessingDashboard({ orders, rentalRecords, onRefresh, formatLkr
             {rentalRecords.length === 0 ? (
               <p className="note-text">No rental records yet.</p>
             ) : (
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Customer</th>
-                      <th>Item</th>
-                      <th>Quantity</th>
-                      <th>Giving Date</th>
-                      <th>Return Date</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Notes</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rentalRecords.map((record) => (
-                      <tr key={record._id}>
-                        <td>{record.customerName}</td>
-                        <td>{record.itemName}</td>
-                        <td>{record.quantity}</td>
-                        <td>{new Date(record.givingDate).toLocaleDateString()}</td>
-                        <td>{new Date(record.returnDate).toLocaleDateString()}</td>
-                        <td>{formatLkr(record.totalAmount)}</td>
-                        <td>
-                          <span className={`status-pill ${record.status}`}>
-                            {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                          </span>
-                        </td>
-                        <td style={{ maxWidth: "200px", whiteSpace: "normal" }}>
-                          {record.notes || "-"}
-                        </td>
-                        <td>
-                          <div className="button-group">
-                            <button className="danger" onClick={() => handleDelete(record._id)}>
-                              Delete
-                            </button>
-                          </div>
-                        </td>
+              <div>
+                {/* Desktop table */}
+                <div className="table-wrap desktop-only">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Giving Date</th>
+                        <th>Return Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {rentalRecords.map((record) => (
+                        <tr key={record._id}>
+                          <td>{record.customerName}</td>
+                          <td>{record.itemName}</td>
+                          <td>{record.quantity}</td>
+                          <td>{new Date(record.givingDate).toLocaleDateString()}</td>
+                          <td>{new Date(record.returnDate).toLocaleDateString()}</td>
+                          <td>{formatLkr(record.totalAmount)}</td>
+                          <td>
+                            <span className={`status-pill ${record.status}`}>
+                              {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                            </span>
+                          </td>
+                          <td style={{ maxWidth: "200px", whiteSpace: "normal" }}>{record.notes || "-"}</td>
+                          <td>
+                            <div className="button-group">
+                              <button className="danger" onClick={() => handleDelete(record._id)}>Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile stacked cards */}
+                <div className="mobile-only">
+                  <style>{`
+                    .rental-card { border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; background:var(--panel-bg,#fff); }
+                    .rental-card .row { display:flex; justify-content:space-between; gap:12px; margin:6px 0; }
+                    .rental-card .label { color:var(--text-muted); font-size:12px; width:40%; }
+                    .rental-card .value { font-weight:600; width:60%; }
+                    @media(min-width:781px){ .mobile-only{display:none} }
+                  `}</style>
+                  {rentalRecords.map((record) => (
+                    <article key={record._id} className="rental-card">
+                      <div className="row"><div className="label">Customer</div><div className="value">{record.customerName}</div></div>
+                      <div className="row"><div className="label">Item</div><div className="value">{record.itemName}</div></div>
+                      <div className="row"><div className="label">Quantity</div><div className="value">{record.quantity}</div></div>
+                      <div className="row"><div className="label">Giving</div><div className="value">{new Date(record.givingDate).toLocaleDateString()}</div></div>
+                      <div className="row"><div className="label">Return</div><div className="value">{new Date(record.returnDate).toLocaleDateString()}</div></div>
+                      <div className="row"><div className="label">Amount</div><div className="value">{formatLkr(record.totalAmount)}</div></div>
+                      <div className="row"><div className="label">Status</div><div className="value"><span className={`status-pill ${record.status}`}>{record.status.charAt(0).toUpperCase()+record.status.slice(1)}</span></div></div>
+                      <div className="row"><div className="label">Notes</div><div className="value" style={{fontWeight:400}}>{record.notes || '-'}</div></div>
+                      <div style={{ marginTop:8, display:"flex", gap:8 }}>
+                        <button className="danger" onClick={() => handleDelete(record._id)}>Delete</button>
+                        <button onClick={() => setEditingRecord(record)}>Edit</button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
               </div>
             )}
           </section>

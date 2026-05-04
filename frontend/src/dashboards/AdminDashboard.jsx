@@ -23,6 +23,20 @@ function AdminDashboard({
   return (
     <div className="admin-dashboard">
       <main className="admin-content">
+        <style>{`
+          /* Mobile-friendly staff cards */
+          .staff-card { border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; background:var(--panel-bg, #fff); }
+          .staff-card .row { display:flex; justify-content:space-between; gap:12px; margin:6px 0; }
+          .staff-card .label { color:var(--text-muted); font-size:12px; width:40%; }
+          .staff-card .value { font-weight:600; width:60%; }
+          .staff-card .actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+          .mobile-only { display:none; }
+          @media (max-width: 780px) {
+            .table-wrap { display:none; }
+            .mobile-only { display:block; }
+            .desktop-only { display:none; }
+          }
+        `}</style>
         {selectedSection === "new-warehouse" && (
           <form className="panel form-grid" onSubmit={onCreateWarehouse}>
         <h3>New Warehouse</h3>
@@ -184,7 +198,9 @@ function AdminDashboard({
         {selectedSection === "staff" && (
       <section className="panel">
         <h3>Staff Accounts</h3>
-        <div className="table-wrap">
+
+        {/* Desktop table, hidden on small screens */}
+        <div className="table-wrap desktop-only">
           <table>
             <thead>
               <tr>
@@ -199,115 +215,151 @@ function AdminDashboard({
             <tbody>
               {staff.map((member) => (
                 <tr key={member._id}>
-                  {editingStaffId === member._id ? (
-                    <>
-                      <td>{editingStaffData.userId || "-"}</td>
-                      <td>
-                        <input
-                          type="text"
-                          value={editingStaffData.username || ""}
-                          onChange={(e) =>
-                            setEditingStaffData((current) => ({
-                              ...current,
-                              username: e.target.value
-                            }))
-                          }
-                        />
-                      </td>
-                      <td>
-                        <select
-                          value={editingStaffData.role || ""}
-                          onChange={(e) =>
-                            setEditingStaffData((current) => ({
-                              ...current,
-                              role: e.target.value
-                            }))
-                          }
-                        >
-                          <option value="admin">admin</option>
-                          <option value="warehouse">warehouse</option>
-                          <option value="shop">shop</option>
-                          <option value="logistics">logistics</option>
-                          <option value="analytics">analytics</option>
-                          <option value="rental">rental</option>
-                        </select>
-                      </td>
-                      <td>{editingStaffData.assignmentType || "-"}</td>
-                      <td>{editingStaffData.assignmentId || "-"}</td>
-                      <td>
-                        <input
-                          type="password"
-                          placeholder="New password (optional)"
-                          value={editingStaffData.password || ""}
-                          onChange={(e) =>
-                            setEditingStaffData((current) => ({
-                              ...current,
-                              password: e.target.value
-                            }))
-                          }
-                        />
-                        <button
-                          className="success"
-                          onClick={() => {
-                            const updates = {
-                              username: editingStaffData.username,
-                              role: editingStaffData.role
-                            };
-                            if (editingStaffData.password) {
-                              updates.password = editingStaffData.password;
-                            }
-                            onUpdateStaff(member._id, updates);
-                            setEditingStaffId(null);
-                          }}
-                        >
-                          Save Changes
-                        </button>
-                        <button
-                          onClick={() => setEditingStaffId(null)}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{member.userId || "-"}</td>
-                      <td>{member.username}</td>
-                      <td>{member.role}</td>
-                      <td>{member.assignmentType}</td>
-                      <td>{member.assignmentId || "-"}</td>
-                      <td>
-                        <button
-                          onClick={() => {
-                            setEditingStaffId(member._id);
-                            setEditingStaffData({
-                              userId: member.userId,
-                              username: member.username,
-                              role: member.role,
-                              assignmentType: member.assignmentType,
-                              assignmentId: member.assignmentId
-                            });
-                          }}
-                        >
-                          Edit Account
-                        </button>
-                        <button
-                          className="danger"
-                          onClick={() => {
-                            if (confirm(`Delete staff account "${member.username}"?`)) {
-                              onDeleteStaff(member._id);
-                            }
-                          }}
-                        >
-                          Remove Account
-                        </button>
-                      </td>
-                    </>
-                  )}
+                  <td>{member.userId || "-"}</td>
+                  <td>{member.username}</td>
+                  <td>{member.role}</td>
+                  <td>{member.assignmentType}</td>
+                  <td>{member.assignmentId || "-"}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        setEditingStaffId(member._id);
+                        setEditingStaffData({
+                          userId: member.userId,
+                          username: member.username,
+                          role: member.role,
+                          assignmentType: member.assignmentType,
+                          assignmentId: member.assignmentId
+                        });
+                      }}
+                    >
+                      Edit Account
+                    </button>
+                    <button
+                      className="danger"
+                      onClick={() => {
+                        if (confirm(`Delete staff account "${member.username}"?`)) {
+                          onDeleteStaff(member._id);
+                        }
+                      }}
+                    >
+                      Remove Account
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile stacked cards */}
+        <div className="mobile-only">
+          {staff.map((member) => (
+            <article key={member._id} className="staff-card">
+              {editingStaffId === member._id ? (
+                <div>
+                  <div className="row">
+                    <div className="label">User ID</div>
+                    <div className="value">{editingStaffData.userId || "-"}</div>
+                  </div>
+                  <div className="row">
+                    <div className="label">Username</div>
+                    <div className="value">
+                      <input
+                        type="text"
+                        value={editingStaffData.username || ""}
+                        onChange={(e) =>
+                          setEditingStaffData((current) => ({ ...current, username: e.target.value }))
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="label">Role</div>
+                    <div className="value">
+                      <select
+                        value={editingStaffData.role || ""}
+                        onChange={(e) => setEditingStaffData((current) => ({ ...current, role: e.target.value }))}
+                      >
+                        <option value="admin">admin</option>
+                        <option value="warehouse">warehouse</option>
+                        <option value="shop">shop</option>
+                        <option value="logistics">logistics</option>
+                        <option value="analytics">analytics</option>
+                        <option value="rental">rental</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="label">Assignment</div>
+                    <div className="value">{editingStaffData.assignmentType || "-"} {editingStaffData.assignmentId ? `: ${editingStaffData.assignmentId}` : ""}</div>
+                  </div>
+                  <div className="row">
+                    <div className="label">New Password</div>
+                    <div className="value">
+                      <input
+                        type="password"
+                        placeholder="New password (optional)"
+                        value={editingStaffData.password || ""}
+                        onChange={(e) => setEditingStaffData((current) => ({ ...current, password: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <div className="actions">
+                    <button
+                      className="success"
+                      onClick={() => {
+                        const updates = { username: editingStaffData.username, role: editingStaffData.role };
+                        if (editingStaffData.password) updates.password = editingStaffData.password;
+                        onUpdateStaff(member._id, updates);
+                        setEditingStaffId(null);
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button onClick={() => setEditingStaffId(null)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="row">
+                    <div className="label">User ID</div>
+                    <div className="value">{member.userId || "-"}</div>
+                  </div>
+                  <div className="row">
+                    <div className="label">Username</div>
+                    <div className="value">{member.username}</div>
+                  </div>
+                  <div className="row">
+                    <div className="label">Role</div>
+                    <div className="value">{member.role}</div>
+                  </div>
+                  <div className="row">
+                    <div className="label">Assignment</div>
+                    <div className="value">{member.assignmentType || "-"} {member.assignmentId ? `: ${member.assignmentId}` : ""}</div>
+                  </div>
+                  <div className="actions">
+                    <button
+                      onClick={() => {
+                        setEditingStaffId(member._id);
+                        setEditingStaffData({ userId: member.userId, username: member.username, role: member.role, assignmentType: member.assignmentType, assignmentId: member.assignmentId });
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="danger"
+                      onClick={() => {
+                        if (confirm(`Delete staff account "${member.username}"?`)) onDeleteStaff(member._id);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+            </article>
+          ))}
         </div>
       </section>
         )}

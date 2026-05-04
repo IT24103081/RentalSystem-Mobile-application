@@ -138,10 +138,26 @@ export const validateFutureDate = (dateStr) => {
   if (!dateStr) {
     return "Date is required";
   }
-  const selectedDate = new Date(dateStr);
+  // Accept YYYY-MM-DD (from <input type="date">) reliably in local timezone
+  let selectedDate;
+  const isoDateMatch = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoDateMatch) {
+    const y = Number(isoDateMatch[1]);
+    const m = Number(isoDateMatch[2]) - 1;
+    const d = Number(isoDateMatch[3]);
+    selectedDate = new Date(y, m, d);
+  } else {
+    selectedDate = new Date(dateStr);
+  }
+
+  if (isNaN(selectedDate.getTime())) {
+    return "Invalid date";
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+  selectedDate.setHours(0, 0, 0, 0);
+
   if (selectedDate < today) {
     return "Date cannot be in the past";
   }

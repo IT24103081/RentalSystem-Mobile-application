@@ -271,7 +271,7 @@ function AnalyticsSection({ analytics, alertStats, formatLkr }) {
   return (
     <div>
       {/* KPI Row */}
-      <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:14,marginBottom:20 }}>
+      <div className="analytics-kpi-grid">
         <KpiCard label="Total Orders" value={analytics.totalRentalOrders} accent="#2563eb"/>
         <KpiCard label="Total Income" value={formatLkr(analytics.totalIncome)} accent="#16a34a"/>
         <KpiCard label="Overdue Rentals" value={overdueData.totalOverdue||analytics.overdueCount} accent="#dc2626"/>
@@ -280,40 +280,42 @@ function AnalyticsSection({ analytics, alertStats, formatLkr }) {
       </div>
 
       {/* Charts Row */}
-      <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:20 }}>
-        <div className="panel" style={{ padding:16 }}>
+      <div className="analytics-chart-grid">
+        <div className="panel analytics-chart-panel">
           <EarningsBarChart data={itemEarnings} />
           {!itemEarnings.length && <p style={{textAlign:"center",color:"#94a3b8",fontSize:13}}>No earnings data yet</p>}
         </div>
-        <div className="panel" style={{ padding:16,display:"flex",alignItems:"center",justifyContent:"center" }}>
+        <div className="panel analytics-chart-panel analytics-chart-panel-center">
           <StockPieChart totals={stockStatus.totals} />
           {!stockStatus.totals?.totalQty && <p style={{textAlign:"center",color:"#94a3b8",fontSize:13}}>No stock data yet</p>}
         </div>
-        <div className="panel" style={{ padding:16 }}>
+        <div className="panel analytics-chart-panel">
           <LocationBarChart data={locationStock} />
           {!locationStock.length && <p style={{textAlign:"center",color:"#94a3b8",fontSize:13}}>No location data yet</p>}
         </div>
       </div>
 
       {/* Export Buttons */}
-      <div style={{ display:"flex",gap:8,marginBottom:16,flexWrap:"wrap" }}>
-        <span style={{ fontSize:13,color:"#64748b",alignSelf:"center",marginRight:4 }}>Export:</span>
-        <button onClick={()=>doExport("pdf","pdf")} disabled={!!exporting} style={{ padding:"6px 14px",borderRadius:6,background:"#dc2626",color:"#fff",border:"none",fontWeight:600,cursor:"pointer",fontSize:13 }}>
+      <div className="analytics-export-bar">
+        <span className="analytics-export-label">Export:</span>
+        <button className="analytics-export-btn analytics-export-btn-pdf" onClick={()=>doExport("pdf","pdf")} disabled={!!exporting}>
           {exporting==="pdf"?"…":"📄 PDF"}
         </button>
-        <button onClick={()=>doExport("csv","csv")} disabled={!!exporting} style={{ padding:"6px 14px",borderRadius:6,background:"#16a34a",color:"#fff",border:"none",fontWeight:600,cursor:"pointer",fontSize:13 }}>
+        <button className="analytics-export-btn analytics-export-btn-csv" onClick={()=>doExport("csv","csv")} disabled={!!exporting}>
           {exporting==="csv"?"…":"📊 CSV / Excel"}
         </button>
       </div>
 
       {/* Tab Bar */}
-      <div style={{ display:"flex",gap:4,marginBottom:14,flexWrap:"wrap" }}>
+      <div className="analytics-tab-bar">
         {tabs.map(t=>(
-          <button key={t.key} onClick={()=>setActiveTab(t.key)} style={{
-            padding:"7px 14px",borderRadius:6,border:"none",cursor:"pointer",fontSize:13,fontWeight:600,
-            background:activeTab===t.key?"#2563eb":"#f1f5f9",
-            color:activeTab===t.key?"#fff":"#475569"
-          }}>{t.label}</button>
+          <button
+            key={t.key}
+            className={`analytics-tab-btn ${activeTab===t.key ? "active" : ""}`}
+            onClick={()=>setActiveTab(t.key)}
+          >
+            {t.label}
+          </button>
         ))}
       </div>
 
@@ -393,11 +395,17 @@ function AnalyticsSection({ analytics, alertStats, formatLkr }) {
                     <td style={{color:"#16a34a",fontWeight:600}}>{r.available}</td>
                     <td style={{color:"#64748b"}}>{fmt(r.pricePerDay)}</td>
                     <td>
-                      <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <div style={{width:60,height:6,background:"#e2e8f0",borderRadius:3,overflow:"hidden"}}>
-                          <div style={{width:`${r.utilizationRate}%`,height:"100%",background:r.utilizationRate>80?"#dc2626":r.utilizationRate>50?"#f59e0b":"#16a34a"}}/>
+                      <div className="analytics-utilization-row">
+                        <div className="analytics-utilization-track">
+                          <div
+                            className="analytics-utilization-fill"
+                            style={{
+                              width:`${r.utilizationRate}%`,
+                              background:r.utilizationRate>80?"#dc2626":r.utilizationRate>50?"#f59e0b":"#16a34a"
+                            }}
+                          />
                         </div>
-                        <span style={{fontSize:12}}>{r.utilizationRate}%</span>
+                        <span className="analytics-utilization-label">{r.utilizationRate}%</span>
                       </div>
                     </td>
                   </tr>
@@ -485,7 +493,16 @@ function AnalyticsNotificationDashboard({
 
             <section className="panel">
               <h3>Notification Queue</h3>
-              <div className="table-wrap">
+              <style>{`
+                @media (max-width:780px){ .desktop-only { display:none; } }
+                @media (min-width:781px){ .mobile-notifs{ display:none; } }
+                .notif-card{ border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; background:var(--panel-bg,#fff); }
+                .notif-card .row{ display:flex; justify-content:space-between; gap:12px; margin:6px 0 }
+                .notif-card .label{ color:var(--text-muted); font-size:12px; width:35% }
+                .notif-card .value{ width:65%; font-weight:600 }
+              `}</style>
+
+              <div className="desktop-only table-wrap">
                 <table>
                   <thead>
                     <tr>
@@ -505,7 +522,7 @@ function AnalyticsNotificationDashboard({
                     {notifications.map(n=>(
                       <tr key={n._id}>
                         <td style={{fontWeight:600}}>{n.title}</td>
-                        <td style={{maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontSize:13}}>{n.message}</td>
+                        <td className="analytics-notification-message">{n.message}</td>
                         <td>{n.type}</td>
                         <td style={{fontSize:13,color:"#64748b"}}>{n.phone||"—"}</td>
                         <td><SmsBadge status={n.smsStatus||"pending"}/></td>
@@ -520,6 +537,24 @@ function AnalyticsNotificationDashboard({
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              <div className="mobile-notifs">
+                {notifications.length===0 && <p className="note-text">No notifications yet</p>}
+                {notifications.map(n => (
+                  <article key={n._id} className="notif-card">
+                    <div className="row"><div className="label">Title</div><div className="value">{n.title}</div></div>
+                    <div className="row"><div className="label">Message</div><div className="value" style={{fontWeight:400}}>{n.message}</div></div>
+                    <div className="row"><div className="label">Type</div><div className="value">{n.type}</div></div>
+                    <div className="row"><div className="label">Phone</div><div className="value">{n.phone||'—'}</div></div>
+                    <div className="row"><div className="label">Status</div><div className="value"><SmsBadge status={n.smsStatus||'pending'} /></div></div>
+                    <div className="row"><div className="label">Sent At</div><div className="value">{n.sentAt?new Date(n.sentAt).toLocaleString():'Not sent'}</div></div>
+                    <div style={{ marginTop:8, display:'flex', gap:8 }}>
+                      <button onClick={()=>setSendingSmsFor(n)}>Send SMS</button>
+                      <button className="danger" onClick={()=>onDeleteNotification(n._id)}>Remove</button>
+                    </div>
+                  </article>
+                ))}
               </div>
             </section>
           </>

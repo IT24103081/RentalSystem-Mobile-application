@@ -21,9 +21,14 @@ function LogisticsDashboard({
   onChangeStatus,
   onDeleteRequest,
   onExportAudit,
-  activeSection
+  activeSection,
+  currentUser
 }) {
   const [expandedAuditId, setExpandedAuditId] = useState(null);
+  const [mobileSection, setMobileSection] = useState(activeSection || "request-form");
+
+  // sync with external activeSection
+  useMemo(() => setMobileSection(activeSection || "request-form"), [activeSection]);
 
   const selectedSection = activeSection || "request-form";
 
@@ -105,44 +110,42 @@ function LogisticsDashboard({
 
   const handleAuditExport = async (auditId) => {
     if (typeof onExportAudit === "function") {
-      await onExportAudit(auditId);
+      try {
+        const url = await onExportAudit(auditId);
+        if (url) {
+          setPdfUrl(url);
+          setPdfOpen(true);
+        }
+      } catch (err) {
+        // bubble error to UI
+        console.error(err);
+      }
     }
+  };
+
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  const closePdf = () => {
+    if (pdfUrl) {
+      try { window.URL.revokeObjectURL(pdfUrl); } catch (e) {}
+    }
+    setPdfUrl(null);
+    setPdfOpen(false);
   };
 
   return (
     <div className="admin-dashboard">
       <main className="admin-content">
-        {selectedSection === "request-form" && (
-          <form className="panel form-grid" onSubmit={onCreateRequest}>
-            <h3>Create Logistics Request</h3>
-            
-            <select
-              value={logisticsForm.transferDirection}
-              onChange={(event) =>
-                setLogisticsForm((current) => ({
-                  ...current,
-                  transferDirection: event.target.value,
-                  sourceWarehouseId: "",
-                  sourceShopId: "",
-                  targetWarehouseId: "",
-                  targetShopId: ""
-                }))
-              }
-            >
-              <option value="warehouse_to_shop">Warehouse to Shop</option>
-              <option value="shop_to_warehouse">Shop to Warehouse</option>
-            </select>
 
-            {logisticsForm.transferDirection === "warehouse_to_shop" ? (
-              <>
+        {selectedSection === "request-form" && (
+          <form className="panel form-grid" onSubmit={(e) => { e.preventDefault(); if (typeof onCreateRequest === 'function') onCreateRequest(); }}>
+            <h3>Create Logistics Request</h3>
+
                 <select
                   value={logisticsForm.sourceWarehouseId}
                   onChange={(event) =>
-                    setLogisticsForm((current) => ({
-                      ...current,
-                      sourceWarehouseId: event.target.value,
-                      sourceShopId: ""
-                    }))
+                    setLogisticsForm((current) => ({ ...current, sourceWarehouseId: event.target.value, sourceShopId: "" }))
                   }
                 >
                   <option value="">Select Source Warehouse</option>
@@ -168,9 +171,7 @@ function LogisticsDashboard({
                     ))}
                   </select>
                 )}
-              </>
-            ) : (
-              <>
+
                 <select
                   value={logisticsForm.sourceShopId}
                   onChange={(event) =>
@@ -204,8 +205,6 @@ function LogisticsDashboard({
                     ))}
                   </select>
                 )}
-              </>
-            )}
 
             <div className="stock-grid-section">
               <h4 style={{ margin: "12px 0 8px 0", fontSize: "14px", fontWeight: "600" }}>Available Stock</h4>
@@ -337,7 +336,16 @@ function LogisticsDashboard({
         {selectedSection === "requests" && (
       <section className="panel">
         <h3>Logistics Requests</h3>
-        <div className="table-wrap">
+        <style>{`
+          @media (max-width:780px){ .desktop-only{display:none} }
+          @media (min-width:781px){ .mobile-requests{display:none} }
+          .request-card{ border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; background:var(--panel-bg,#fff); }
+          .request-card .row{ display:flex; justify-content:space-between; gap:12px; margin:6px 0 }
+          .request-card .label{ color:var(--text-muted); font-size:12px; width:40% }
+          .request-card .value{ width:60%; font-weight:600 }
+        `}</style>
+
+        <div className="desktop-only table-wrap">
           <table>
             <thead>
               <tr>
@@ -416,8 +424,57 @@ function LogisticsDashboard({
             </tbody>
           </table>
         </div>
+
+        
+
+        <div className="mobile-requests">
+          {logisticsRequests.length===0 && <p className="note-text">No logistics requests</p>}
+          {logisticsRequests.map((request) => {
+            const requestOrder = getRequestOrder(request);
+            const primaryItemName = getRequestPrimaryItemName(requestOrder) || request.itemName;
+            const requestItem = findItemByName(primaryItemName);
+            const requestImageSrc = requestItem ? getInventoryImageSrc(requestItem) : null;
+
+            return (
+                <article key={request._id} className="request-card">
+                <div className="row"><div className="label">Item</div><div className="value">{primaryItemName}</div></div>
+                <div className="row"><div className="label">Type</div><div className="value">{request.type}</div></div>
+                <div className="row"><div className="label">Target</div><div className="value">{request.targetWarehouseId?`Warehouse: ${warehouseNameById.get(String(request.targetWarehouseId))}`:request.targetShopId?`Shop: ${shopNameById.get(String(request.targetShopId))}`:'-'}</div></div>
+                <div className="row"><div className="label">Qty</div><div className="value">{request.requestedQuantity||'—'}</div></div>
+                <div className="row"><div className="label">Order</div><div className="value">{requestOrder ? `${requestOrder.customerName} | ${formatLkr(requestOrder.totalDue)}` : '-'}</div></div>
+                <div className="row"><div className="label">Status</div><div className="value">
+                  {currentUser && currentUser.role === 'logistics' ? (
+                    <select value={request.status} onChange={(e)=> onChangeStatus(request._id, e.target.value)}>
+                      <option value="pending">pending</option>
+                      <option value="accepted">accepted</option>
+                      <option value="ready">ready</option>
+                      <option value="received">received</option>
+                      <option value="issued">issued</option>
+                      <option value="rejected">rejected</option>
+                    </select>
+                  ) : (
+                    <span>{request.status}</span>
+                  )}
+                </div></div>
+                <div style={{ marginTop:8, display:'flex', gap:8 }}>
+                  <button className="danger" onClick={()=>onDeleteRequest(request._id)}>Remove</button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </section>
         )}
+      {pdfOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }} onClick={closePdf}>
+          <div style={{ width: '90%', height: '85%', background: '#fff', borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={(e)=>e.stopPropagation()}>
+            <div style={{ padding: 8, display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={closePdf}>Close</button>
+            </div>
+            <iframe src={pdfUrl} style={{ flex: 1, border: 0 }} title="Audit PDF" />
+          </div>
+        </div>
+      )}
 
         {selectedSection === "audit" && (
       <section className="panel">
@@ -443,20 +500,46 @@ function LogisticsDashboard({
                   <td>{log.customerInfo?.name || "-"}</td>
                   <td>{log.requestStatus}</td>
                   <td>
-                    <button
-                      type="button"
-                      onClick={() => handleAuditView(log._id)}
-                    >
-                      {expandedAuditId === log._id ? "Hide" : "View"}
-                    </button>
                     <button type="button" onClick={() => handleAuditExport(log._id)}>
                       PDF
                     </button>
+                    {typeof onDeleteAudit === 'function' && (
+                      <button type="button" className="danger" onClick={() => onDeleteAudit(log._id)}>
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile audit cards for small screens */}
+        <div className="mobile-only" style={{ marginTop: 8 }}>
+          <style>{`
+            @media (min-width:781px){ .mobile-only{display:none} }
+            .audit-card{ border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; background:var(--panel-bg,#fff); }
+            .audit-card .row{ display:flex; justify-content:space-between; gap:12px; margin:6px 0 }
+            .audit-card .label{ color:var(--text-muted); font-size:12px; width:40% }
+            .audit-card .value{ width:60%; font-weight:600 }
+          `}</style>
+          {(!auditLogs || auditLogs.length===0) && <p className="note-text">No audit logs</p>}
+          {auditLogs && auditLogs.map((log)=> (
+            <article key={log._id} className="audit-card" style={{cursor:'pointer'}} onClick={() => setExpandedAuditId((cur)=> cur===log._id? null: log._id)}>
+              <div className="row"><div className="label">Date</div><div className="value">{new Date(log.createdAt).toLocaleDateString()}</div></div>
+              <div className="row"><div className="label">Type</div><div className="value">{log.type}</div></div>
+              <div className="row"><div className="label">Item</div><div className="value">{log.itemInfo?.itemName||'-'}</div></div>
+              <div className="row"><div className="label">Customer</div><div className="value">{log.customerInfo?.name||'-'}</div></div>
+              <div className="row"><div className="label">Status</div><div className="value">{log.requestStatus}</div></div>
+              <div style={{ marginTop:8, display:'flex', gap:8 }}>
+                <button onClick={(e) => { e.stopPropagation(); handleAuditExport(log._id); }}>PDF</button>
+                {typeof onDeleteAudit === 'function' && (
+                  <button className="danger" onClick={(e) => { e.stopPropagation(); onDeleteAudit(log._id); }}>Delete</button>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
 
         {expandedAuditId && (

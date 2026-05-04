@@ -92,6 +92,88 @@ const NAV_ITEMS = [
   { key: "rentals-records", label: "Rental Records", roles: ["rental"] }
 ];
 
+const NAV_ITEM_ICONS = {
+  "warehouse-items": "box",
+  "warehouse-orders": "clipboard",
+  "warehouse-request-items": "refresh",
+  "shop-items": "bag",
+  "shop-orders": "receipt",
+  "shop-request-items": "refresh",
+  "logistics-new-request": "plus-circle",
+  "logistics-requests": "truck",
+  "logistics-audit": "shield-check",
+  "admin-new-warehouse": "building",
+  "admin-warehouses": "layers",
+  "admin-new-staff": "user-plus",
+  "admin-staff": "users",
+  "analytics-notifications": "bell",
+  "analytics-reports": "chart",
+  "rentals-finalized": "check-circle",
+  "rentals-active": "clock",
+  "rentals-records": "book"
+};
+
+const NAV_ITEM_SHORT_LABELS = {
+  "warehouse-items": "Inventory",
+  "warehouse-orders": "Orders",
+  "warehouse-request-items": "Requests",
+  "shop-items": "Shop",
+  "shop-orders": "Shop Orders",
+  "shop-request-items": "Requests",
+  "logistics-new-request": "New",
+  "logistics-requests": "Logistics",
+  "logistics-audit": "Audit",
+  "admin-new-warehouse": "Warehouse",
+  "admin-warehouses": "Locations",
+  "admin-new-staff": "Add Staff",
+  "admin-staff": "Staff",
+  "analytics-notifications": "Notify",
+  "analytics-reports": "Analytics",
+  "rentals-finalized": "Done",
+  "rentals-active": "Active",
+  "rentals-records": "Records"
+};
+
+const NAV_ICON_PATHS = {
+  box: ["M20 7.5 12 3 4 7.5m16 0-8 4.5m8-4.5v9L12 21m0-9L4 7.5m8 4.5v9m0-9 8-4.5M12 12 4 7.5"],
+  clipboard: ["M9 4.75h6m-7.5 3h9a2.25 2.25 0 0 1 2.25 2.25v8.5A2.25 2.25 0 0 1 16.5 20.75h-9A2.25 2.25 0 0 1 5.25 18.5V10A2.25 2.25 0 0 1 7.5 7.75Z", "M9 4.75A2.25 2.25 0 0 1 11.25 2.5h1.5A2.25 2.25 0 0 1 15 4.75v0.5H9v-0.5Z"],
+  refresh: ["M3.5 12a8.5 8.5 0 0 1 14.6-6.03M20.5 12a8.5 8.5 0 0 1-14.6 6.03", "M18.1 5.97V2.75h3.15", "M5.9 18.03v3.22H2.75"],
+  bag: ["M6.5 8.5h11l-0.8 10.25A2 2 0 0 1 14.7 20.5H9.3a2 2 0 0 1-1.99-1.75L6.5 8.5Z", "M9 8.5V7a3 3 0 1 1 6 0v1.5"],
+  receipt: ["M7.5 3.5h9a2 2 0 0 1 2 2v14l-2.5-1.5L13.5 19.5 11 18l-2.5 1.5L6 18l-2.5 1.5v-14a2 2 0 0 1 2-2Z", "M8.5 8h7M8.5 11.5h7M8.5 15h4"],
+  "plus-circle": ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z", "M12 8v8M8 12h8"],
+  truck: ["M2.75 7.5h11v7h-11v-7Zm11 2.25h3.2l2.3 2.3v2.45h-5.5V9.75Z", "M7 17.25a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Zm9 0a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z"],
+  "shield-check": ["M12 3.25 5.5 5.5v4.6c0 4.25 2.6 8.2 6.5 9.65 3.9-1.45 6.5-5.4 6.5-9.65V5.5L12 3.25Z", "m9.1 11.05 1.95 1.95 3.85-3.85"],
+  building: ["M5.5 20.5V4.75h8.5V20.5M14 8h4.5V20.5H14", "M8 8h1.5M8 11h1.5M8 14h1.5"],
+  layers: ["m12 4.5 8 4.5-8 4.5L4 9l8-4.5Zm8 9-8 4.5-8-4.5m16-4.5v4.5"],
+  "user-plus": ["M16.5 7.5h5m-2.5-2.5v5", "M9 11.5a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Zm-5.5 8.5a5.5 5.5 0 1 1 11 0"],
+  users: ["M8.25 10.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.5 1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3.5 19a4.75 4.75 0 1 1 9.5 0m1.75 0a4 4 0 0 1 6.75-2.85"],
+  bell: ["M14.25 18a2.25 2.25 0 0 1-4.5 0m7.5-2.25H6.75c.95-.9 1.5-2.2 1.5-3.6V9a3.75 3.75 0 1 1 7.5 0v3.15c0 1.4.55 2.7 1.5 3.6Z"],
+  chart: ["M5 19.5h14M7.5 16v-4m4 4V8m4 8v-6"],
+  "check-circle": ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z", "m8.5 10.75-3.5 3.5-1.5-1.5"],
+  clock: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z", "M12 7.5v5l3 2"],
+  book: ["M5.5 4.5h9.75a2 2 0 0 1 2 2V19h-10a2 2 0 0 1-2-2V4.5Zm0 0v12.5A2 2 0 0 0 7.5 19H17"],
+  logout: ["M14.5 16.5 20 12l-5.5-4.5", "M20 12H9", "M10.5 20H5.75A1.75 1.75 0 0 1 4 18.25V5.75C4 4.78 4.78 4 5.75 4h4.75"]
+};
+
+function NavIcon({ iconKey, className }) {
+  const paths = NAV_ICON_PATHS[iconKey] || NAV_ICON_PATHS.box;
+
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {paths.map((pathDef) => (
+        <path
+          key={pathDef}
+          d={pathDef}
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+    </svg>
+  );
+}
+
 const ADMIN_VIEW_TO_SECTION = {
   "admin-new-warehouse": "new-warehouse",
   "admin-warehouses": "warehouses",
@@ -171,7 +253,12 @@ const formatLkr = (value) =>
 
 const formatDateInput = (value) => {
   if (!value) return "";
-  return new Date(value).toISOString().slice(0, 10);
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 };
 
 const getSettledValue = (result, fallback) =>
@@ -1008,7 +1095,16 @@ function OrdersTable({ orders, onRefresh }) {
     <>
       <section className="panel">
         <h3>Orders (Active & Historical)</h3>
-        <div className="table-wrap">
+        <style>{`
+          /* Orders responsive: show table on desktop, cards on mobile */
+          .order-card { border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; background:var(--panel-bg,#fff); }
+          .order-card .row { display:flex; justify-content:space-between; gap:12px; margin:6px 0; }
+          .order-card .label { color:var(--text-muted); font-size:12px; width:40%; }
+          .order-card .value { font-weight:600; width:60%; }
+          @media (min-width: 781px) { .mobile-orders { display:none; } }
+          @media (max-width: 780px) { .desktop-only { display:none; } }
+        `}</style>
+        <div className="desktop-only table-wrap">
           <table>
             <thead>
               <tr>
@@ -1068,6 +1164,26 @@ function OrdersTable({ orders, onRefresh }) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card list */}
+        <div className="mobile-orders">
+          {orders.map((order) => (
+            <article key={order._id} className="order-card">
+              <div className="row"><div className="label">Customer</div><div className="value">{order.customerName}</div></div>
+              <div className="row"><div className="label">Items</div><div className="value">{order.lineItems?.length ? `${order.lineItems.length} items` : order.itemSnapshot?.name || 'N/A'}</div></div>
+              <div className="row"><div className="label">Source</div><div className="value">{order.orderSource}</div></div>
+              <div className="row"><div className="label">Date</div><div className="value">{new Date(order.orderDate).toLocaleDateString()}</div></div>
+              <div className="row"><div className="label">Total</div><div className="value">{formatLkr(order.totalDue)}</div></div>
+              <div className="row"><div className="label">Balance</div><div className="value">{formatLkr(order.balance)}</div></div>
+              <div className="row"><div className="label">Status</div><div className="value">{order.status === 'completed' ? <span className={`status-pill ${order.status}`}>Completed</span> : <select value={order.status} onChange={(e)=>updateStatus(order._id,e.target.value)}><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>}</div></div>
+              <div style={{ marginTop:8, display:'flex', gap:8, flexWrap:'wrap' }}>
+                <button onClick={()=>handleInvoiceClick(order)}>Invoice</button>
+                {order.status === 'active' && <button style={{ background:'var(--success)' }} onClick={()=>setShowSettlement(order)}>Settle</button>}
+                <button className="danger" onClick={()=>deleteOrder(order._id)}>Delete</button>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -1407,6 +1523,15 @@ function App() {
     if (!currentUser) return;
     setActiveView(ROLE_DEFAULT_VIEW[currentUser.role]);
     loadAllData();
+  }, [currentUser]);
+
+  // Poll for logistics updates when user is logistics manager so mobile sees new requests/audit
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== "logistics") return;
+    const id = setInterval(() => {
+      loadAllData();
+    }, 15000);
+    return () => clearInterval(id);
   }, [currentUser]);
 
   const handleLogin = async (event) => {
@@ -1764,34 +1889,38 @@ function App() {
       setError(quantityError);
       return;
     }
+    try {
+      await apiRequest("/api/logistics/requests", {
+        method: "POST",
+        body: JSON.stringify({
+          ...logisticsForm,
+          orderId: logisticsForm.orderId || null,
+          itemId: logisticsForm.itemId || null,
+          requestedQuantity: Number(logisticsForm.requestedQuantity || 1),
+          sourceWarehouseId: logisticsForm.sourceWarehouseId || null,
+          sourceShopId: logisticsForm.sourceShopId || null,
+          targetWarehouseId: logisticsForm.targetWarehouseId || null,
+          targetShopId: logisticsForm.targetShopId || null
+        })
+      });
 
-    await apiRequest("/api/logistics/requests", {
-      method: "POST",
-      body: JSON.stringify({
-        ...logisticsForm,
-        orderId: logisticsForm.orderId || null,
-        itemId: logisticsForm.itemId || null,
-        requestedQuantity: Number(logisticsForm.requestedQuantity || 1),
-        sourceWarehouseId: logisticsForm.sourceWarehouseId || null,
-        sourceShopId: logisticsForm.sourceShopId || null,
-        targetWarehouseId: logisticsForm.targetWarehouseId || null,
-        targetShopId: logisticsForm.targetShopId || null
-      })
-    });
-    setLogisticsForm({
-      type: "order_dispatch",
-      transferDirection: "warehouse_to_shop",
-      orderId: "",
-      itemId: "",
-      requestedQuantity: 1,
-      sourceWarehouseId: "",
-      sourceShopId: "",
-      targetWarehouseId: "",
-      targetShopId: "",
-      notes: ""
-    });
-    setError("");
-    loadAllData();
+      setLogisticsForm({
+        type: "order_dispatch",
+        transferDirection: "warehouse_to_shop",
+        orderId: "",
+        itemId: "",
+        requestedQuantity: 1,
+        sourceWarehouseId: "",
+        sourceShopId: "",
+        targetWarehouseId: "",
+        targetShopId: "",
+        notes: ""
+      });
+      setError("");
+      await loadAllData();
+    } catch (err) {
+      setError(err.message || "Failed to create request");
+    }
   };
 
   const createWarehouseRequest = async (event) => {
@@ -1804,25 +1933,28 @@ function App() {
       setError(quantityError);
       return;
     }
+    try {
+      await apiRequest("/api/logistics/requests", {
+        method: "POST",
+        body: JSON.stringify({
+          sourceShopId: warehouseRequestForm.sourceShopId || null,
+          itemId: warehouseRequestForm.itemId || null,
+          requestedQuantity: Number(warehouseRequestForm.requestedQuantity || 1),
+          notes: warehouseRequestForm.notes
+        })
+      });
 
-    await apiRequest("/api/logistics/requests", {
-      method: "POST",
-      body: JSON.stringify({
-        sourceShopId: warehouseRequestForm.sourceShopId || null,
-        itemId: warehouseRequestForm.itemId || null,
-        requestedQuantity: Number(warehouseRequestForm.requestedQuantity || 1),
-        notes: warehouseRequestForm.notes
-      })
-    });
-
-    setWarehouseRequestForm({
-      sourceShopId: "",
-      itemId: "",
-      requestedQuantity: "1",
-      notes: ""
-    });
-    setError("");
-    loadAllData();
+      setWarehouseRequestForm({
+        sourceShopId: "",
+        itemId: "",
+        requestedQuantity: "1",
+        notes: ""
+      });
+      setError("");
+      await loadAllData();
+    } catch (err) {
+      setError(err.message || "Failed to create warehouse request");
+    }
   };
 
   const createShopRequest = async (event) => {
@@ -1835,38 +1967,58 @@ function App() {
       setError(quantityError);
       return;
     }
+    try {
+      await apiRequest("/api/logistics/requests", {
+        method: "POST",
+        body: JSON.stringify({
+          sourceWarehouseId: shopRequestForm.sourceWarehouseId || null,
+          itemId: shopRequestForm.itemId || null,
+          requestedQuantity: Number(shopRequestForm.requestedQuantity || 1),
+          notes: shopRequestForm.notes
+        })
+      });
 
-    await apiRequest("/api/logistics/requests", {
-      method: "POST",
-      body: JSON.stringify({
-        sourceWarehouseId: shopRequestForm.sourceWarehouseId || null,
-        itemId: shopRequestForm.itemId || null,
-        requestedQuantity: Number(shopRequestForm.requestedQuantity || 1),
-        notes: shopRequestForm.notes
-      })
-    });
-
-    setShopRequestForm({
-      sourceWarehouseId: "",
-      itemId: "",
-      requestedQuantity: "1",
-      notes: ""
-    });
-    setError("");
-    loadAllData();
+      setShopRequestForm({
+        sourceWarehouseId: "",
+        itemId: "",
+        requestedQuantity: "1",
+        notes: ""
+      });
+      setError("");
+      await loadAllData();
+    } catch (err) {
+      setError(err.message || "Failed to create shop request");
+    }
   };
 
   const changeLogisticsStatus = async (requestId, status) => {
-    await apiRequest(`/api/logistics/requests/${requestId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status })
-    });
-    loadAllData();
+    try {
+      await apiRequest(`/api/logistics/requests/${requestId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status })
+      });
+      await loadAllData();
+    } catch (err) {
+      setError(err.message || "Failed to update status");
+    }
   };
 
   const deleteLogisticsRequest = async (requestId) => {
-    await apiRequest(`/api/logistics/requests/${requestId}`, { method: "DELETE" });
-    loadAllData();
+    try {
+      await apiRequest(`/api/logistics/requests/${requestId}`, { method: "DELETE" });
+      await loadAllData();
+    } catch (err) {
+      setError(err.message || "Failed to delete request");
+    }
+  };
+
+  const deleteAuditLog = async (auditId) => {
+    try {
+      await apiRequest(`/api/logistics/audit-logs/${auditId}`, { method: "DELETE" });
+      await loadAllData();
+    } catch (err) {
+      setError(err.message || "Failed to delete audit log");
+    }
   };
 
   const exportAuditPDF = async (auditLogId) => {
@@ -1884,16 +2036,11 @@ function App() {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `audit-${auditLogId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Return the blob URL to the caller so they can open it in a modal/tab and revoke when done
+      return url;
     } catch (error) {
       console.error("Error exporting PDF:", error);
-      alert("Failed to export PDF: " + error.message);
+      throw error;
     }
   };
 
@@ -1925,51 +2072,7 @@ function App() {
   if (!currentUser) {
     return (
       <div className="auth-shell">
-        <div className="auth-wrapper">
-          {/* Hero Section */}
-          <section className="auth-hero">
-            <div className="auth-hero-content">
-              <div className="auth-logo-section">
-                <div className="auth-logo-badge">RMS</div>
-                <p className="auth-eyebrow">Rental Management System</p>
-              </div>
-              <h1>Enterprise Rental Operations</h1>
-              <p className="auth-tagline">Complete visibility across warehouse inventory, shop operations, logistics coordination, and financial management.</p>
-              
-              <div className="auth-features">
-                <div className="auth-feature-item">
-                  <div className="feature-icon">📦</div>
-                  <div>
-                    <strong>Inventory Control</strong>
-                    <p>Real-time stock tracking across warehouses and shops with damage logs</p>
-                  </div>
-                </div>
-                <div className="auth-feature-item">
-                  <div className="feature-icon">🚚</div>
-                  <div>
-                    <strong>Logistics Hub</strong>
-                    <p>Manage transfers, dispatch orders, and track logistics with audit trails</p>
-                  </div>
-                </div>
-                <div className="auth-feature-item">
-                  <div className="feature-icon">💰</div>
-                  <div>
-                    <strong>Billing System</strong>
-                    <p>Advanced/full payments, balance tracking, and overdue management</p>
-                  </div>
-                </div>
-                <div className="auth-feature-item">
-                  <div className="feature-icon">📊</div>
-                  <div>
-                    <strong>Analytics</strong>
-                    <p>Comprehensive reporting and performance metrics across operations</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Login Form Section */}
+        <div className="auth-wrapper auth-wrapper-portal">
           <section className="auth-form-section">
             <form className="auth-form-card" onSubmit={handleLogin}>
               <div className="form-header">
@@ -2008,11 +2111,10 @@ function App() {
               </div>
 
               <button type="submit" className="form-submit-btn">Sign In</button>
-              
+
               <p className="form-footer">Credentials assigned by system administrator</p>
             </form>
 
-            {/* Featured Items */}
             {items.length > 0 && (
               <div className="auth-featured-section">
                 <h3>Featured Inventory Items</h3>
@@ -2042,6 +2144,40 @@ function App() {
                 </div>
               </div>
             )}
+
+            <div className="auth-system-details">
+              <h3>System Capabilities</h3>
+              <div className="auth-features">
+                <div className="auth-feature-item">
+                  <div className="feature-icon">📦</div>
+                  <div>
+                    <strong>Inventory Control</strong>
+                    <p>Real-time stock tracking across warehouses and shops with damage logs.</p>
+                  </div>
+                </div>
+                <div className="auth-feature-item">
+                  <div className="feature-icon">🚚</div>
+                  <div>
+                    <strong>Logistics Hub</strong>
+                    <p>Manage transfers, dispatch orders, and track logistics with audit trails.</p>
+                  </div>
+                </div>
+                <div className="auth-feature-item">
+                  <div className="feature-icon">💰</div>
+                  <div>
+                    <strong>Billing System</strong>
+                    <p>Support full and advance payments, balance tracking, and overdue handling.</p>
+                  </div>
+                </div>
+                <div className="auth-feature-item">
+                  <div className="feature-icon">📊</div>
+                  <div>
+                    <strong>Analytics & Notifications</strong>
+                    <p>Generate reports and monitor operational performance in one place.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </div>
@@ -2089,9 +2225,12 @@ function App() {
                 className={`global-nav-btn ${activeView === item.key ? "active" : ""}`}
                 onClick={() => setActiveView(item.key)}
               >
-                {item.key === "logistics-requests" && currentUser.role === "logistics"
-                  ? `Logistics Requests (${logisticsRequestNotificationCount})`
-                  : item.label}
+                <NavIcon iconKey={NAV_ITEM_ICONS[item.key]} className="global-nav-icon" />
+                <span className="global-nav-text">
+                  {item.key === "logistics-requests" && currentUser.role === "logistics"
+                    ? `Logistics Requests (${logisticsRequestNotificationCount})`
+                    : item.label}
+                </span>
               </button>
             ))}
           </nav>
@@ -2099,6 +2238,30 @@ function App() {
             Logout
           </button>
         </aside>
+
+        <nav className="mobile-bottom-nav" aria-label="Mobile dashboard navigation">
+          {allowedNavItems.map((item) => (
+            <button
+              key={`mobile-${item.key}`}
+              type="button"
+              className={`mobile-nav-btn ${activeView === item.key ? "active" : ""}`}
+              onClick={() => setActiveView(item.key)}
+            >
+              <NavIcon iconKey={NAV_ITEM_ICONS[item.key]} className="mobile-nav-icon" />
+              <span className="mobile-nav-label">
+                {NAV_ITEM_SHORT_LABELS[item.key] || item.label}
+              </span>
+            </button>
+          ))}
+          <button
+            type="button"
+            className="mobile-nav-btn mobile-logout-btn"
+            onClick={handleLogout}
+          >
+            <NavIcon iconKey="logout" className="mobile-nav-icon" />
+            <span className="mobile-nav-label">Logout</span>
+          </button>
+        </nav>
 
         <main className="content-grid">
           {(activeView === "warehouse-items" || activeView === "warehouse-orders" || activeView === "warehouse-request-items") && (canView("warehouse-items") || canView("warehouse-orders") || canView("warehouse-request-items")) ? (
@@ -2656,6 +2819,8 @@ function App() {
               shops={shops}
               logisticsRequests={logisticsRequests}
               auditLogs={auditLogs}
+              currentUser={currentUser}
+              onDeleteAudit={deleteAuditLog}
               onCreateRequest={createLogisticsRequest}
               onChangeStatus={changeLogisticsStatus}
               onDeleteRequest={deleteLogisticsRequest}

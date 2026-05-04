@@ -195,6 +195,21 @@ router.put("/logistics/requests/:id", requireAuth, requireRole("logistics", "adm
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
+    // Keep related audit logs in sync with the latest request status/details
+    try {
+      await AuditLog.updateMany(
+        { logisticsRequestId: request._id },
+        {
+          $set: {
+            requestStatus: request.status,
+            notes: request.notes
+          }
+        }
+      );
+    } catch (syncErr) {
+      console.warn("Failed to sync audit logs after request update:", syncErr.message);
+    }
+
     return res.json(request);
   } catch (error) {
     return res.status(400).json({ message: error.message });
@@ -212,6 +227,13 @@ router.patch("/logistics/requests/:id/status", requireAuth, requireRole("logisti
     request.status = status;
     await request.save();
 
+    // Update audit logs requestStatus for this logistics request
+    try {
+      await AuditLog.updateMany({ logisticsRequestId: request._id }, { $set: { requestStatus: status } });
+    } catch (syncErr) {
+      console.warn("Failed to update audit logs for status change:", syncErr.message);
+    }
+
     if (status === "ready") {
       await Notification.create({
         title: "Item Ready to Collect",
@@ -224,6 +246,19 @@ router.patch("/logistics/requests/:id/status", requireAuth, requireRole("logisti
     return res.json(request);
   } catch (error) {
     return res.status(400).json({ message: error.message });
+  }
+});
+
+// Delete an audit log
+router.delete("/logistics/audit-logs/:id", requireAuth, requireRole("logistics", "admin"), async (req, res) => {
+  try {
+    const result = await AuditLog.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ message: "Audit log not found" });
+    }
+    return res.json({ message: "Audit log deleted" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 });
 

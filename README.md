@@ -65,6 +65,22 @@ This uses the root script and starts:
 - Backend: `npm run dev --prefix backend`
 - Frontend: `npm run dev --prefix frontend`
 
+### Option 1B: Run backend, frontend, and mobile tunnel together (from root)
+
+```bash
+npm run start:mobile
+```
+
+This starts backend and frontend, then opens a LocalTunnel URL for the frontend. The tunnel script also writes the generated URL into `mobile/.env` as `EXPO_PUBLIC_WEB_APP_URL`, so Expo Go can open the same address without manual IP updates.
+
+To request a consistent subdomain, run (PowerShell):
+
+```bash
+$env:LT_SUBDOMAIN="rentalsystemapp"; npm run tunnel:web
+```
+
+If that subdomain is already in use, LocalTunnel returns an error and you should choose another subdomain.
+
 ### Option 2: Run each service separately
 
 Backend:
@@ -98,6 +114,16 @@ The web app can be opened inside Expo Go through a small React Native shell in `
 If the phone cannot reach the site, check that both devices are on the same Wi-Fi network and that Windows Firewall allows port `5173`.
 
 If port 5173 is already in use, stop the conflicting process first. The Expo shell depends on the frontend staying on 5173.
+
+## Stable Mobile URL Across Different Routers
+
+LAN IP addresses (for example `192.168.x.x`) change when you switch routers, so a fixed LAN URL will eventually break. Use the tunnel flow to avoid LAN IP dependency:
+
+1. From the root, run `npm run start:mobile`.
+2. Start Expo in `mobile/` with `npm start`.
+3. Open the app in Expo Go.
+
+The tunnel URL will keep mobile access working even after changing Wi-Fi routers.
 
 ## Troubleshooting: Port already in use (Windows PowerShell)
 
